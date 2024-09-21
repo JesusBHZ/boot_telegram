@@ -5,7 +5,7 @@ WORKDIR /home
 
 # Install dependencies
 RUN pip install --upgrade pip
-RUN pip install fastapi python-telegram-bot
+RUN pip install fastapi python-telegram-bot uvicorn
 
 # Copy the bot and API code
 COPY ./bot /bot
