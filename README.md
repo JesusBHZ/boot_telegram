@@ -17,3 +17,7 @@ kill process_id
 sh fileScript
 
 # Crear contendeor de docker que jeejucte el bot de telegram y luego mandarlo a render
+
+
+# Uvicorn
+uvicorn api:app --host 0.0.0.0 --port 8000
