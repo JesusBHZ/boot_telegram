@@ -1,15 +1,15 @@
 FROM python:latest
 
 # Set the working directory
-WORKDIR /home/bot
+WORKDIR /home
 
 # Install dependencies
 RUN pip install --upgrade pip
 RUN pip install fastapi python-telegram-bot
 
 # Copy the bot and API code
-COPY ./bot ./bot
-COPY ./api ./api
+COPY ./bot /bot
+COPY ./api /api
 
 # Expose the port
 EXPOSE 8000
