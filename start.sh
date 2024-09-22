@@ -7,11 +7,13 @@ UVICORN_PID=$!
 
 # Iniciar el bot de Telegram solo si no hay otra instancia
 if ! pgrep -f "bot/bot.py" > /dev/null; then
+    echo "Iniciando el bot de Telegram..."
     python bot/bot.py &
     # Guardar el PID del proceso del bot
     BOT_PID=$!
 else
     echo "El bot de Telegram ya está en ejecución."
+    BOT_PID=""  # No asignar PID si ya está en ejecución
 fi
 
 # Iniciar la API (si es diferente del bot)
@@ -22,15 +24,19 @@ API_PID=$!
 # Función para manejar la terminación
 cleanup() {
     echo "Shutting down..."
+
     # Asegurarse de que solo se intenten matar procesos en ejecución
-    if kill -0 $UVICORN_PID >/dev/null 2>&1; then
+    if [[ -n "$UVICORN_PID" ]] && kill -0 $UVICORN_PID >/dev/null 2>&1; then
         kill $UVICORN_PID
+        echo "Uvicorn detenido."
     fi
     if [[ -n "$BOT_PID" ]] && kill -0 $BOT_PID >/dev/null 2>&1; then
         kill $BOT_PID
+        echo "Bot de Telegram detenido."
     fi
     if [[ -n "$API_PID" ]] && kill -0 $API_PID >/dev/null 2>&1; then
         kill $API_PID
+        echo "API adicional detenida."
     fi
     exit
 }
@@ -38,7 +44,7 @@ cleanup() {
 # Capturar señales de terminación
 trap cleanup SIGINT SIGTERM
 
-# Mantener el script en ejecución
-wait $UVICORN_PID
-wait $BOT_PID
-wait $API_PID
+# Mantener el script en ejecución y manejar adecuadamente los procesos
+if [[ -n "$UVICORN_PID" ]]; then wait $UVICORN_PID; fi
+if [[ -n "$BOT_PID" ]]; then wait $BOT_PID; fi
+if [[ -n "$API_PID" ]]; then wait $API_PID; fi
