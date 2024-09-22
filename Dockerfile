@@ -10,8 +10,8 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the bot and API code
-COPY ./bot /bot
-COPY ./api /api
+COPY ./bot /home/bot
+COPY ./api /home/api
 
 # Expose the port
 EXPOSE 8000

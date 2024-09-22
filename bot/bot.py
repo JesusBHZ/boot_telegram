@@ -55,7 +55,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 def main() -> None:
     """Start the bot."""
     # Obtener el token desde una variable de entorno
-    BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+    BOT_TOKEN = "7642588692:AAFmgbQOz7SHoR5Qy0-mxHSCaWyVJqzriz0"
     
     if not BOT_TOKEN:
         raise ValueError("No se ha encontrado el token del bot en las variables de entorno.")

@@ -4,8 +4,8 @@ import os
 
 app = FastAPI()
 
-API_KEY = os.getenv("RENDER_API_KEY")  # Clave de API de Render
-SERVICE_ID = os.getenv("RENDER_SERVICE_ID")  # ID de tu servicio
+API_KEY = os.getenv("rnd_PoA2HiwFWAHLRmMPhKO9XGLnI2e0")  # Clave de API de Render
+SERVICE_ID = os.getenv("srv-crnl62e8ii6s73et86n0")  # ID de tu servicio
 
 HEADERS = {
     "Authorization": f"Bearer {API_KEY}",
