@@ -12,11 +12,17 @@ python bot/bot.py &
 # Guardar el PID del proceso del bot
 BOT_PID=$!
 
+# Iniciarla API
+python api/get.py &
+# Guardar el PID del proceso de la api
+API_PID=$!
+
 # Función para manejar la terminación
 cleanup() {
     echo "Shutting down..."
     kill $UVICORN_PID
     kill $BOT_PID
+    kill $API_PID
     exit
 }
 
@@ -26,3 +32,4 @@ trap cleanup SIGINT SIGTERM
 # Mantener el script en ejecución
 wait $UVICORN_PID
 wait $BOT_PID
+wait $API_PID
