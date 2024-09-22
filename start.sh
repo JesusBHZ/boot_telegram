@@ -15,20 +15,19 @@ else
     BOT_PID=""
 fi
 
-
-# Iniciar la API (si es diferente del bot)
+# Iniciar la API adicional (para mantener vivo el servicio)
 python api/get.py &
 # Guardar el PID del proceso de la API
 API_PID=$!
 
-# Función para manejar la terminación
+# Función para manejar la terminación de procesos
 cleanup() {
-    echo "Shutting down..."
+    echo "Deteniendo todos los procesos..."
 
-    # Asegurarse de que solo se intenten matar procesos en ejecución
+    # Asegúrate de que los procesos estén activos antes de intentar detenerlos
     if [[ -n "$UVICORN_PID" ]] && kill -0 $UVICORN_PID >/dev/null 2>&1; then
         kill $UVICORN_PID
-        echo "Uvicorn detenido."
+        echo "FastAPI detenido."
     fi
     if [[ -n "$BOT_PID" ]] && kill -0 $BOT_PID >/dev/null 2>&1; then
         kill $BOT_PID
@@ -41,7 +40,7 @@ cleanup() {
     exit
 }
 
-# Capturar señales de terminación
+# Capturar señales de terminación para hacer limpieza adecuada
 trap cleanup SIGINT SIGTERM
 
 # Mantener el script en ejecución y manejar adecuadamente los procesos
