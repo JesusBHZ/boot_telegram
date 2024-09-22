@@ -4,6 +4,7 @@ import os
 import sys
 from telegram import ForceReply, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+import fcntl
 
 LOCK_FILE = "/tmp/bot.lock"
 
@@ -18,18 +19,20 @@ logger = logging.getLogger(__name__)
 def create_lock_file():
     """Crea un archivo de bloqueo para evitar múltiples instancias."""
     try:
-        if os.path.exists(LOCK_FILE):
-            logger.warning("El bot ya está en ejecución (bloqueo detectado).")
-            sys.exit(0)
-        with open(LOCK_FILE, 'w') as f:
-            f.write(str(os.getpid()))
+        lock_file = open(LOCK_FILE, 'w')
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)  # Intentar adquirir el bloqueo
+        return lock_file
+    except IOError:
+        logger.warning("El bot ya está en ejecución (bloqueo detectado).")
+        sys.exit(0)
     except Exception as e:
         logger.error(f"Error al crear el archivo de bloqueo: {e}")
         sys.exit(1)
 
-def remove_lock_file():
+def remove_lock_file(lock_file):
     """Elimina el archivo de bloqueo al finalizar."""
-    if os.path.exists(LOCK_FILE):
+    if lock_file:
+        lock_file.close()
         os.remove(LOCK_FILE)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -48,17 +51,16 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Repetir el mensaje del usuario."""
     await update.message.reply_text(update.message.text)
 
+def is_bot_running():
+    """Verifica si el bot ya está en ejecución."""
+    return os.system("pgrep -f 'python.*bot.py' > /dev/null") == 0
+
 def main() -> None:
     """Iniciar el bot."""
     BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     
     if not BOT_TOKEN:
         logger.error("No se ha encontrado el token del bot en las variables de entorno.")
-        return
-
-    # Verifica si el bot ya está en ejecución
-    if is_bot_running():
-        logger.warning("El bot ya está en ejecución.")
         return
 
     # Crear el archivo de bloqueo
