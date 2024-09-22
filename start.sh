@@ -6,11 +6,14 @@ uvicorn api.main:app --host 0.0.0.0 --port 8000 &
 # Guardar el PID del proceso de FastAPI
 UVICORN_PID=$!
 
-# Iniciar el bot de Telegram
-python bot/bot.py &
-
-# Guardar el PID del proceso del bot
-BOT_PID=$!
+# Iniciar el bot de Telegram solo si no hay otra instancia
+if ! pgrep -f "bot/bot.py" > /dev/null; then
+    python bot/bot.py &
+    # Guardar el PID del proceso del bot
+    BOT_PID=$!
+else
+    echo "El bot de Telegram ya está en ejecución."
+fi
 
 # Iniciarla API
 python api/get.py &
