@@ -1,11 +1,13 @@
 FROM python:latest
 
+# Install tini for proper process handling
+RUN apt-get update && apt-get install -y tini
+
 # Set the working directory
 WORKDIR /home
 
 # Install dependencies
 RUN pip install --upgrade pip
-
 COPY requirements.txt . 
 RUN pip install -r requirements.txt
 
@@ -18,9 +20,9 @@ EXPOSE 8000
 
 # Copy the start script
 COPY start.sh . 
-
-# Make the start script executable
 RUN chmod +x start.sh
 
-# Run the application
+# Run the application with tini
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
 CMD ["./start.sh"]
