@@ -56,8 +56,13 @@ def main() -> None:
         logger.error("No se ha encontrado el token del bot en las variables de entorno.")
         return
 
+    # Verifica si el bot ya está en ejecución
+    if is_bot_running():
+        logger.warning("El bot ya está en ejecución.")
+        return
+
     # Crear el archivo de bloqueo
-    create_lock_file()
+    lock_file = create_lock_file()
 
     application = ApplicationBuilder().token(BOT_TOKEN).build()
     
@@ -66,11 +71,11 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     logger.info("Iniciando el bot...")
-    
+
     try:
         application.run_polling(allowed_updates=Update.ALL_TYPES)
     finally:
-        remove_lock_file()
+        remove_lock_file(lock_file)
 
 if __name__ == "__main__":
     main()
