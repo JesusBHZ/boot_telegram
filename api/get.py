@@ -2,7 +2,7 @@ import requests
 import time
 import os
 
-API_URL = os.getenv("TELEGRAM_BOT_API")  # Cambia esto a tu URL de API
+API_URL = "http://localhost:8000/keep-alive"  # Cambia esto a tu URL de API
 
 def keep_alive():
     while True:
