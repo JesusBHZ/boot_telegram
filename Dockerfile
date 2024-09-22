@@ -6,7 +6,7 @@ WORKDIR /home
 # Install dependencies
 RUN pip install --upgrade pip
 
-COPY requirements.txt .
+COPY requirements.txt . 
 RUN pip install -r requirements.txt
 
 # Copy the bot and API code
@@ -17,7 +17,10 @@ COPY ./api /home/api
 EXPOSE 8000
 
 # Copy the start script
-COPY start.sh .
+COPY start.sh . 
+
+# Make the start script executable
+RUN chmod +x start.sh
 
 # Run the application
 CMD ["./start.sh"]
