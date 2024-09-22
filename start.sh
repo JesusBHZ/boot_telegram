@@ -1,2 +1,28 @@
-python3 bot.py &
-uvicorn api:app --host 0.0.0.0 --port 8000
+#!/bin/bash
+
+# Iniciar la aplicación FastAPI
+uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+
+# Guardar el PID del proceso de FastAPI
+UVICORN_PID=$!
+
+# Iniciar el bot de Telegram
+python bot/bot.py &
+
+# Guardar el PID del proceso del bot
+BOT_PID=$!
+
+# Función para manejar la terminación
+cleanup() {
+    echo "Shutting down..."
+    kill $UVICORN_PID
+    kill $BOT_PID
+    exit
+}
+
+# Capturar señales de terminación
+trap cleanup SIGINT SIGTERM
+
+# Mantener el script en ejecución
+wait $UVICORN_PID
+wait $BOT_PID

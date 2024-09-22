@@ -17,7 +17,7 @@ COPY ./api /home/api
 EXPOSE 8000
 
 # Copy the start script
-COPY start.py .
+COPY start.sh .
 
 # Run the application
-CMD ["python", "start.py"]
+CMD ["./start.sh"]
